@@ -16,7 +16,7 @@ Vytvořeno pomocí Next.js 14 App Router, tRPC, TypeScript, Payload CMS, Tailwin
 ✉️ Krásné e-maily pro registraci a po nákupu\
 ✅ Administrátor může ověřovat produkty, aby zajistil vysokou kvalitu produktu\
 ⌨️ 100% napsáno v jazyce TypeScript\
-🎁 ...mnohem více\
+🎁 ...mnohem více
 
 ### Jak spustit lokálně:
 
