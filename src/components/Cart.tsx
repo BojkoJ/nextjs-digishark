@@ -53,13 +53,13 @@ const Cart = () => {
 				</SheetHeader>
 				{itemCount > 0 ? (
 					<>
-						<div className="flex w-full flex-col pr-6">
-							<ScrollArea>
+						<ScrollArea>
+							<div className="flex w-full flex-col pr-6">
 								{items.map(({ product }) => (
 									<CartItem product={product} key={product.id} />
 								))}
-							</ScrollArea>
-						</div>
+							</div>
+						</ScrollArea>
 						<div className="space-y-4 pr-6">
 							<Separator />
 							<div className="space-y-1 5 text-sm">
