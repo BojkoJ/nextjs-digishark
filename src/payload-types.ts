@@ -50,7 +50,7 @@ export interface Product {
   price: number;
   category: 'ui_balicky' | 'ikonky';
   product_files: (string | ProductFile)[];
-  approvedForSale?: ('pedning' | 'approved' | 'denied') | null;
+  approvedForSale?: ('pending' | 'approved' | 'denied') | null;
   priceId?: string | null;
   stripeId?: string | null;
   images: {
