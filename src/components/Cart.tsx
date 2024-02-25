@@ -81,7 +81,7 @@ const Cart = () => {
 								<SheetTrigger asChild>
 									{/*defaultně by to vytvořilo button element takže cokoliv by jsme do něj dali by bylo v tom buttonu, když dáme asChild tak se to vypne a můžeme si vytvořit svůj custom button */}
 									<Link
-										href="/košík"
+										href="/cart"
 										className={buttonVariants({
 											className: "w-full",
 										})}
