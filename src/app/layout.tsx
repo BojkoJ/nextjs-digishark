@@ -9,28 +9,31 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "DigiShark",
-	description: "Váš obchod pro digitální prostředky",
+    title: "DigiShark",
+    description: "Váš obchod pro digitální prostředky",
 };
 
 export default function RootLayout({
-	children,
+    children,
 }: {
-	children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-	return (
-		<html lang="en" className="h-full">
-			<body
-				className={cn("relative h-full font-sans antialiased", inter.className)}
-			>
-				<main className="relative flex flex-col min-h-screen">
-					<Providers>
-						<Navbar />
-						<div className="flex-grow flex-1">{children}</div>
-					</Providers>
-				</main>
-				<Toaster position="bottom-center" richColors />
-			</body>
-		</html>
-	);
+    return (
+        <html lang='en' className='h-full'>
+            <body
+                className={cn(
+                    "relative h-full font-sans antialiased",
+                    inter.className
+                )}
+            >
+                <main className='relative flex flex-col min-h-screen'>
+                    <Providers>
+                        <Navbar />
+                        <div className='flex-grow flex-1'>{children}</div>
+                    </Providers>
+                </main>
+                <Toaster position='bottom-center' richColors />
+            </body>
+        </html>
+    );
 }

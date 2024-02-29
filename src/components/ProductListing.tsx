@@ -38,7 +38,7 @@ const ProductListing = ({ product, index }: ProductListingProps) => {
         return (
             <Link
                 className={cn(
-                    "invisible h-full w-full cursor-pointer group/main",
+                    "invisible h-full w-full custom-cursor-pointer group/main",
                     {
                         "visible animate-in fade-in-5": isVisible,
                     }

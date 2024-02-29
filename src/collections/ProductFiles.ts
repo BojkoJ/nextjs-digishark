@@ -99,6 +99,8 @@ export const ProductFiles: CollectionConfig = {
             "text/css", // CSS soubory
             "application/json", // JSON soubory
             "application/vnd.sketch", // Soubory Sketch
+            //"application/zip", // Add zip mime type
+            //"application/x-rar-compressed", // Add rar mime type
         ],
     },
     fields: [
