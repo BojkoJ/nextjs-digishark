@@ -1,10 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	images: {
-		domains: [
-			"localhost",
-			"digishark-production.up.railway.app",
-			"digishark.up.railway.app",
+		remotePatterns: [
+			{
+				hostname: "localhost",
+				pathname: "**",
+				port: "3000",
+				protocol: "http",
+			},
+			{
+				hostname: "digishark.up.railway.app",
+				pathname: "**",
+				port: "3000",
+				protocol: "https",
+			},
 		],
 	},
 };
