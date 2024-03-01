@@ -1,6 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Users = void 0;
+var PrimaryActionEmail_1 = require("../components/emails/PrimaryActionEmail");
+var adminsAndUser = function (_a) {
+    var user = _a.req.user;
+    if (user.role === "admin")
+        return true;
+    return {
+        id: {
+            equals: user.id,
+        },
+    };
+};
 exports.Users = {
     labels: {
         singular: "Uživatel",
@@ -11,22 +22,58 @@ exports.Users = {
         verify: {
             generateEmailHTML: function (_a) {
                 var token = _a.token;
-                return "<a href='".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/overit-email?token=").concat(token, "'>\n\t\t\t\t\tOv\u011B\u0159it email\n\t\t\t\t</a>");
+                return (0, PrimaryActionEmail_1.PrimaryActionEmailHtml)({
+                    actionLabel: "Ověřte svůj e-mail",
+                    buttonText: "Ověřit e-mail",
+                    href: "".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/overit-email?token=").concat(token),
+                });
             },
         },
     },
     access: {
-        read: function () { return true; },
-        create: function () { return true; },
+        read: adminsAndUser,
+        create: function () { return true; }, // každý si může vytvořit účet
+        update: function (_a) {
+            var req = _a.req;
+            return req.user.role === "admin";
+        },
+        delete: function (_a) {
+            var req = _a.req;
+            return req.user.role === "admin";
+        },
+    },
+    admin: {
+        hidden: function (_a) {
+            var user = _a.user;
+            return user.role !== "admin";
+        }, // schované pro uživatele co nejsou admini
+        defaultColumns: ["id"],
     },
     fields: [
+        {
+            name: "products",
+            label: "Produkty",
+            admin: {
+                condition: function () { return false; },
+            },
+            type: "relationship",
+            relationTo: "products",
+            hasMany: true,
+        },
+        {
+            name: "product_files",
+            label: "Soubory produktů",
+            admin: {
+                condition: function () { return false; },
+            },
+            type: "relationship",
+            relationTo: "product_files",
+            hasMany: true,
+        },
         {
             name: "role",
             defaultValue: "user",
             required: true,
-            /* 			admin: {
-                condition: () => false,
-            }, */
             type: "select",
             options: [
                 {

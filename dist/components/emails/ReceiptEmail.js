@@ -49,8 +49,8 @@ var ReceiptEmail = function (_a) {
             React.createElement(components_1.Container, { style: container },
                 React.createElement(components_1.Section, null,
                     React.createElement(components_1.Column, null,
-                        React.createElement(components_1.Img, { src: "".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/email_sent.png"), width: '100', height: '100', alt: 'DigiShark' })),
-                    React.createElement(components_1.Column, { align: 'right', style: tableCell },
+                        React.createElement(components_1.Img, { src: "".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/email_sent.png"), width: "100", height: "100", alt: "DigiShark" })),
+                    React.createElement(components_1.Column, { align: "right", style: tableCell },
                         React.createElement(components_1.Text, { style: heading }, "\u00DA\u010Dtenka"))),
                 React.createElement(components_1.Section, { style: informationTable },
                     React.createElement(components_1.Row, { style: informationTableRow },
@@ -69,14 +69,14 @@ var ReceiptEmail = function (_a) {
                     var _a;
                     var image = product.images[0].image;
                     return (React.createElement(components_1.Section, { key: product.id },
-                        React.createElement(components_1.Column, { style: { width: "64px" } }, typeof image !== "string" && image.url ? (React.createElement(components_1.Img, { src: image.url, width: '64', height: '64', alt: 'Obr\u00E1zek produktu', style: productIcon })) : null),
+                        React.createElement(components_1.Column, { style: { width: "64px" } }, typeof image !== "string" && image.url ? (React.createElement(components_1.Img, { src: image.url, width: "64", height: "64", alt: "Obr\u00E1zek produktu", style: productIcon })) : null),
                         React.createElement(components_1.Column, { style: { paddingLeft: "22px" } },
                             React.createElement(components_1.Text, { style: productTitle }, product.name),
                             product.description ? (React.createElement(components_1.Text, { style: productDescription }, product.description.length > 50
                                 ? ((_a = product.description) === null || _a === void 0 ? void 0 : _a.slice(0, 50)) + "..."
                                 : product.description)) : null,
                             React.createElement(components_1.Link, { href: "".concat(process.env.NEXT_PUBLIC_SERVER_URL, "/thank-you?orderId=").concat(orderId), style: productLink }, "St\u00E1hnout produkty")),
-                        React.createElement(components_1.Column, { style: productPriceWrapper, align: 'right' },
+                        React.createElement(components_1.Column, { style: productPriceWrapper, align: "right" },
                             React.createElement(components_1.Text, { style: productPrice }, (0, utils_1.formatPrice)(product.price)))));
                 }),
                 React.createElement(components_1.Section, null,
@@ -86,29 +86,29 @@ var ReceiptEmail = function (_a) {
                             paddingTop: 20,
                         } },
                         React.createElement(components_1.Text, { style: productTitle }, "Transak\u010Dn\u00ED poplatek")),
-                    React.createElement(components_1.Column, { style: productPriceWrapper, align: 'right' },
+                    React.createElement(components_1.Column, { style: productPriceWrapper, align: "right" },
                         React.createElement(components_1.Text, { style: productPrice }, (0, utils_1.formatPrice)(1)))),
                 React.createElement(components_1.Hr, { style: productPriceLine }),
-                React.createElement(components_1.Section, { align: 'right' },
-                    React.createElement(components_1.Column, { style: tableCell, align: 'right' },
+                React.createElement(components_1.Section, { align: "right" },
+                    React.createElement(components_1.Column, { style: tableCell, align: "right" },
                         React.createElement(components_1.Text, { style: productPriceTotal }, "CELKEM")),
                     React.createElement(components_1.Column, { style: productPriceVerticalLine }),
                     React.createElement(components_1.Column, { style: productPriceLargeWrapper },
                         React.createElement(components_1.Text, { style: productPriceLarge }, (0, utils_1.formatPrice)(total)))),
                 React.createElement(components_1.Hr, { style: productPriceLineBottom }),
                 React.createElement(components_1.Text, { style: footerLinksWrapper },
-                    React.createElement(components_1.Link, { href: '#' }, "Nastaven\u00ED \u00FA\u010Dtu"),
+                    React.createElement(components_1.Link, { href: "#" }, "Nastaven\u00ED \u00FA\u010Dtu"),
                     " \u2022",
                     " ",
-                    React.createElement(components_1.Link, { href: '#' }, "Obchodn\u00ED podm\u00EDnky"),
+                    React.createElement(components_1.Link, { href: "#" }, "Obchodn\u00ED podm\u00EDnky"),
                     " \u2022",
                     " ",
-                    React.createElement(components_1.Link, { href: '#' }, "Z\u00E1sady ochrany osobn\u00EDch \u00FAdaj\u016F")),
+                    React.createElement(components_1.Link, { href: "#" }, "Z\u00E1sady ochrany osobn\u00EDch \u00FAdaj\u016F")),
                 React.createElement(components_1.Text, { style: footerCopyright },
                     "Copyright \u00A9 2023 DigiShark Inc. ",
                     React.createElement("br", null),
                     " ",
-                    React.createElement(components_1.Link, { href: '#' }, "V\u0161echna pr\u00E1va vyhrazena"))))));
+                    React.createElement(components_1.Link, { href: "#" }, "V\u0161echna pr\u00E1va vyhrazena"))))));
 };
 exports.ReceiptEmail = ReceiptEmail;
 var ReceiptEmailHtml = function (props) {
