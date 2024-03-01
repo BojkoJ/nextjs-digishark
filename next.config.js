@@ -10,8 +10,6 @@ const nextConfig = {
 			},
 			{
 				hostname: "digishark.up.railway.app",
-				pathname: "**",
-				port: "3000",
 				protocol: "https",
 			},
 		],
