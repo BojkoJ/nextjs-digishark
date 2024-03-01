@@ -43,7 +43,7 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
 		typeof order.user === "string" ? order.user : order.user.id;
 
 	if (orderUserId !== user?.id) {
-		return redirect(`/prihlaseni?origin=/thank-you?orderId=${orderId}`);
+		return redirect(`/prihlaseni?origin=thank-you?orderId=${orderId}`);
 	}
 
 	const products = order.products as Product[];
@@ -113,7 +113,12 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
 										product.product_files as ProductFile[]
 									).map((file) => file.filename) as string[];
 
+									//const downloadUrl = (product.product_files as ProductFile)
+									//	.url as string;
+
 									const { image } = product.images[0];
+
+									console.log(downloadUrls);
 
 									return (
 										<li key={product.id} className="flex space-x-6 py-6">
@@ -134,6 +139,15 @@ const ThankYouPage = async ({ searchParams }: PageProps) => {
 
 													<p className="my-1">Kategorie: {label}</p>
 												</div>
+												{/*order._isPaid ? (
+													<a
+														href={downloadUrl}
+														download={product.name}
+														className="text-blue-600 hover:underline underline-offset-2"
+													>
+														Download asset
+													</a>
+												) : null*/}
 
 												{order._isPaid ? (
 													/* If we had one file per product we would do it like this, but we have multiple per product so we have to do it otherways. */

@@ -85,6 +85,10 @@ const Navbar = async () => {
 										<Cart />
 									</div>
 								</div>
+								<div className="lg:hidden ml-4 flow-root lg:ml-6">
+									{/* flow-root - dá každý element do svého malého bloku */}
+									<Cart />
+								</div>
 							</div>
 						</div>
 					</div>
