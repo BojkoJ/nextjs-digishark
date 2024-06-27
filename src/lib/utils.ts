@@ -59,7 +59,7 @@ export function constructMetadata({
 			creator: "@janbojko",
 		},
 		icons,
-		metadataBase: new URL("https://digishark.up.railway.app"),
+		metadataBase: new URL("https://nextjs-digishark-production.up.railway.app"),
 		...(noIndex && {
 			robots: {
 				index: false,

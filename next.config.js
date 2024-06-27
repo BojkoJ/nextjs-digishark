@@ -9,7 +9,7 @@ const nextConfig = {
 				protocol: "http",
 			},
 			{
-				hostname: "digishark.up.railway.app",
+				hostname: "nextjs-digishark-production.up.railway.app",
 				protocol: "https",
 			},
 		],
