@@ -6,9 +6,14 @@ import type {
   Where,
 } from "payload";
 
-const addUser: CollectionBeforeChangeHook = ({ req, data }) => {
-  const user = req.user as User | null;
-  return { ...data, user: user?.id };
+const addUser: CollectionBeforeChangeHook = ({ req, data, operation }) => {
+  // Vlastníka nastavíme jen při vytvoření - aby admin editací nepřepsal
+  // původního vlastníka (a ten pak svoje soubory neztratil z dohledu).
+  if (operation === "create") {
+    const user = req.user as User | null;
+    return { ...data, user: user?.id };
+  }
+  return data;
 };
 
 // Soubory, ke kterým má uživatel přístup pro čtení:

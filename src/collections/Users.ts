@@ -37,7 +37,8 @@ export const Users: CollectionConfig = {
 	},
 	admin: {
 		hidden: ({ user }) => user?.role !== "admin", // schované pro uživatele co nejsou admini
-		defaultColumns: ["id"],
+		useAsTitle: "email", // relationship na usera (např. vlastník produktu) ukáže email
+		defaultColumns: ["email", "role"],
 	},
 	fields: [
 		{

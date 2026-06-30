@@ -9,10 +9,19 @@ import { PRODUCT_CATEGORIES } from "../../config";
 import { Product, User } from "../../payload-types";
 import { stripe } from "../../lib/stripe";
 
-const addUser: CollectionBeforeChangeHook<Product> = async ({ req, data }) => {
-	const user = req.user;
+const addUser: CollectionBeforeChangeHook<Product> = async ({
+	req,
+	data,
+	operation,
+}) => {
+	// Vlastníka (prodejce) nastavíme JEN při vytvoření. Při update (např. když
+	// admin produkt schvaluje) vlastníka NEMĚNÍME - jinak by se přepsal na admina
+	// a původní prodejce by produkt přestal vidět mezi svými.
+	if (operation === "create") {
+		return { ...data, user: req.user?.id };
+	}
 
-	return { ...data, user: user?.id };
+	return data;
 };
 
 const syncUser: CollectionAfterChangeHook<Product> = async ({ req, doc }) => {
@@ -155,12 +164,17 @@ export const Products: CollectionConfig = {
 	fields: [
 		{
 			name: "user",
+			label: "Vlastník (prodejce)",
 			type: "relationship",
 			relationTo: "users",
 			required: true,
 			hasMany: false,
 			admin: {
-				condition: () => false, // v CMS tohle pole nepůjde vidět - je to jen vazba na uživatele, který produkt vytvořil
+				// Vidí jen admin a jen u existujícího produktu (ne při vytváření) -
+				// aby při schvalování viděl, kdo produkt vytvořil. Pro prodejce skryté.
+				condition: (_data, _siblingData, { user, operation }) =>
+					user?.role === "admin" && operation !== "create",
+				readOnly: true, // jen ke čtení, vlastnictví nelze ručně měnit
 			},
 		},
 		{

@@ -33,11 +33,13 @@ export const Media: CollectionConfig = {
     },
     hooks: {
         beforeChange: [
-            ({ req, data }) => {
-                //funkce co se zavolá těsně před změnou produktu
-                // každý productImage (náhleďák produktu) bude spojený s uživatelem protože
-                // když uživatel bude vybírat media files (soubory) pro produkt, tak aby měl přístup jen k těm svým¨
-                return { ...data, user: req.user?.id };
+            ({ req, data, operation }) => {
+                // Vlastníka nastavíme jen při vytvoření - aby admin editací nepřepsal
+                // původního vlastníka (a ten pak svoje obrázky neztratil z dohledu).
+                if (operation === "create") {
+                    return { ...data, user: req.user?.id };
+                }
+                return data;
 
                 // Funkce v tomto hooku zajistí, že každá změna položky media přiřadí aktuálního uživatele
                 // (získaného z req.user.id) jako vlastníka této položky.
