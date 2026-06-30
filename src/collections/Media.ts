@@ -61,6 +61,7 @@ export const Media: CollectionConfig = {
 
             return await isAdminOrHasAccessToImages()({ req });
         },
+        create: ({ req }) => Boolean(req.user), // každý přihlášený prodejce může nahrávat
         delete: ({ req }) => isAdminOrHasAccessToImages()({ req }),
         update: ({ req }) => isAdminOrHasAccessToImages()({ req }),
     },
