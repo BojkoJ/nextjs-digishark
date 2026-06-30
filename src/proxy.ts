@@ -5,9 +5,16 @@ export async function proxy(req: NextRequest) {
 	const { nextUrl, cookies } = req;
 	const { user } = await getServerSideUser(cookies);
 
-	if (user && ["/prihlaseni", "registrace"].includes(nextUrl.pathname)) {
+	if (user && ["/prihlaseni", "/registrace"].includes(nextUrl.pathname)) {
 		return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SERVER_URL}/`);
 	}
 
 	return NextResponse.next();
 }
+
+// Middleware spouštíme JEN na přihlašovacích stránkách. Nesmí běžet na API
+// routách - hlavně Stripe webhook (/api/webhooks/stripe) musí dostat request
+// nedotčený, jinak hrozí problémy s ověřením raw body podpisu.
+export const config = {
+	matcher: ["/prihlaseni", "/registrace"],
+};

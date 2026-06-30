@@ -26,6 +26,12 @@ export async function POST(req: Request) {
 			process.env.STRIPE_WEBHOOK_SECRET || ""
 		);
 	} catch (err) {
+		// Zalogujeme do Vercel logů, ať je jasné, že selhalo ověření podpisu
+		// (nejčastěji špatný/chybějící STRIPE_WEBHOOK_SECRET pro tento endpoint).
+		console.error(
+			"Stripe webhook: ověření podpisu selhalo.",
+			err instanceof Error ? err.message : err
+		);
 		return new Response(
 			`Webhook Error: ${err instanceof Error ? err.message : "Unknown Error"}`,
 			{ status: 400 }
@@ -86,11 +92,13 @@ export async function POST(req: Request) {
 			},
 		});
 
-		// send receipt
+		// Odeslání účtenky je BEST-EFFORT. Když selže (např. Resend nemá ověřenou
+		// doménu nebo příjemce), jen to zalogujeme a webhooku vrátíme 200 -
+		// platba je zpracovaná (_isPaid nastaveno), nesmí kvůli e-mailu retryovat.
 		try {
 			const fromAddress =
 				process.env.EMAIL_FROM_ADDRESS || "onboarding@resend.dev";
-			const data = await resend.emails.send({
+			await resend.emails.send({
 				from: `DigiShark <${fromAddress}>`,
 				to: [user.email],
 				subject: "Děkujeme za objednávku! Zde je vaše faktura.",
@@ -101,10 +109,14 @@ export async function POST(req: Request) {
 					products: order.products as Product[],
 				}),
 			});
-			return Response.json({ data });
 		} catch (error) {
-			return Response.json({ error }, { status: 500 });
+			payload.logger.error(
+				{ error },
+				"Odeslání účtenky e-mailem selhalo (platba ale proběhla)"
+			);
 		}
+
+		return new Response(null, { status: 200 });
 	}
 
 	return new Response(null, { status: 200 });
