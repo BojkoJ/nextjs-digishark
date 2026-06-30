@@ -176,9 +176,11 @@ export const ReceiptEmail = ({
 };
 
 export const ReceiptEmailHtml = (props: ReceiptEmailProps) =>
-	render(<ReceiptEmail {...props} />, {
-		pretty: true,
-	});
+	// `pretty` záměrně NEpoužíváme - v @react-email/render v6 totiž pretty-formátování
+	// znovu parsuje a validuje HTML (přes angular-html-parser) a spadne na vnořených
+	// <td> (Column uvnitř Section). Bez něj se vrátí raw HTML, které e-mail klienti
+	// v pohodě zobrazí.
+	render(<ReceiptEmail {...props} />);
 
 const main = {
 	fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',

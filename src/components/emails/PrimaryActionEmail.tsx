@@ -65,7 +65,8 @@ export const EmailTemplate = ({
 };
 
 export const PrimaryActionEmailHtml = (props: EmailTemplateProps) =>
-	render(<EmailTemplate {...props} />, { pretty: true });
+	// bez `pretty` - viz poznámka v ReceiptEmail.tsx (v6 renderer jinak validuje HTML a padá)
+	render(<EmailTemplate {...props} />);
 
 const main = {
 	backgroundColor: "#ffffff",
