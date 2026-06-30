@@ -3,7 +3,6 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { uploadthingStorage } from "@payloadcms/storage-uploadthing";
 import { nodemailerAdapter } from "@payloadcms/email-nodemailer";
 import { buildConfig } from "payload";
-import nodemailer from "nodemailer";
 import sharp from "sharp";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -40,9 +39,11 @@ export default buildConfig({
         },
     }),
     email: nodemailerAdapter({
-        defaultFromAddress: "onboarding@resend.dev",
+        defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || "onboarding@resend.dev",
         defaultFromName: "DigiShark",
-        transport: nodemailer.createTransport({
+        // transportOptions necháme vytvořit adaptér (používá vlastní nodemailer),
+        // takže nodemailer nemusíme mít jako přímou závislost.
+        transportOptions: {
             host: "smtp.resend.com",
             secure: true,
             port: 465,
@@ -50,7 +51,7 @@ export default buildConfig({
                 user: "resend",
                 pass: process.env.RESEND_API_KEY,
             },
-        }),
+        },
     }),
     // Payload 3 používá sharp pro generování velikostí obrázků (musí být závislost projektu)
     sharp,

@@ -88,8 +88,10 @@ export async function POST(req: Request) {
 
 		// send receipt
 		try {
+			const fromAddress =
+				process.env.EMAIL_FROM_ADDRESS || "onboarding@resend.dev";
 			const data = await resend.emails.send({
-				from: "DigiShark <onboarding@resend.dev>",
+				from: `DigiShark <${fromAddress}>`,
 				to: [user.email],
 				subject: "Děkujeme za objednávku! Zde je vaše faktura.",
 				html: await ReceiptEmailHtml({
