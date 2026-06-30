@@ -43,7 +43,6 @@
         "payload": "^3.85.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
-        "react-email": "^6.6.5",
         "react-hook-form": "^7.80.0",
         "resend": "^6.16.0",
         "sharp": "0.34.4",
@@ -67,6 +66,6 @@
         "typescript": "^5.9.0"
     },
     "engines": {
-        "node": ">=20.9.0"
+        "node": "22.x"
     }
 }
