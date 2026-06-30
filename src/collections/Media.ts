@@ -66,10 +66,9 @@ export const Media: CollectionConfig = {
         update: ({ req }) => isAdminOrHasAccessToImages()({ req }),
     },
     admin: {
-        // nechceme aby se Media zobrazovala v admin dashboardu v CMS, ale chceme aby pořád fungovala jako úložiště
-        // nahraných náhleďáků, chceme aby tuhle kolekci viděl jenom Administrátor
-        hidden: ({ user }) => user?.role !== "admin",
-        // pokud user není admin tak Media bude hidden
+        // Kolekce je viditelná v menu i pro prodejce. Díky access pravidlům
+        // (read/update/delete scoped na vlastníka) tam každý vidí jen svoje obrázky.
+        useAsTitle: "filename",
     },
     upload: {
         // staticURL/staticDir (lokální filesystem) v Payload 3 nepoužíváme -

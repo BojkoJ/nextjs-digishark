@@ -60,8 +60,12 @@ export default buildConfig({
         // protože filesystem na Vercelu je read-only/efemérní.
         uploadthingStorage({
             collections: {
-                media: true,
-                product_files: true,
+                // disablePayloadAccessControl: soubory se servírují přímo z UploadThing
+                // CDN (rychlé, veřejné díky acl: public-read) místo přes pomalou
+                // Payload proxy /api/<collection>/file/... Bez toho upload pole v adminu
+                // dlouho čekají na náhled a formulář se zacyklí na "creating".
+                media: { disablePayloadAccessControl: true },
+                product_files: { disablePayloadAccessControl: true },
             },
             options: {
                 token: process.env.UPLOADTHING_TOKEN,

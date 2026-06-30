@@ -21,6 +21,10 @@ const syncUser: CollectionAfterChangeHook<Product> = async ({ req, doc }) => {
 	const fullUser = await req.payload.findByID({
 		collection: "users",
 		id: req.user.id,
+		// DŮLEŽITÉ: předáváme req, aby operace běžela ve STEJNÉ transakci jako
+		// vytvoření produktu. Bez toho by v Payload 3 + Postgres vznikla
+		// samostatná transakce, která se zablokuje (deadlock) o tu vnější -> hang.
+		req,
 	});
 
 	if (fullUser && typeof fullUser === "object") {
@@ -44,6 +48,8 @@ const syncUser: CollectionAfterChangeHook<Product> = async ({ req, doc }) => {
 			data: {
 				products: dataToUpdate,
 			},
+			req, // stejná transakce (viz výše) - jinak deadlock
+			overrideAccess: true, // syncUser je interní, obejde admin-only update na users
 		});
 	}
 };
@@ -200,9 +206,11 @@ export const Products: CollectionConfig = {
 			type: "select",
 			defaultValue: "pending",
 			access: {
-				// request obsahuje roli uživatele
+				// Měnit smí jen admin (schvalování). Číst smí i prodejce, aby viděl
+				// status svého produktu (pending/approved/denied). `read` proto
+				// neomezujeme - jinak se ne-adminovi zacyklí form-state (klient pole
+				// nevidí, ale server mu pořád nastavuje defaultValue) a uložení visí.
 				create: ({ req }) => req.user?.role === "admin",
-				read: ({ req }) => req.user?.role === "admin",
 				update: ({ req }) => req.user?.role === "admin",
 			},
 			options: [

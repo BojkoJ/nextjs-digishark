@@ -31,6 +31,7 @@ const yourOwnAndPurchased: Access = async ({ req }) => {
         equals: user.id,
       },
     },
+    req, // sdílíme transakci requestu (Payload 3 + Postgres)
   });
 
   const purchasedProductFileIds = orders
@@ -78,7 +79,9 @@ export const ProductFiles: CollectionConfig = {
     plural: "Soubory produktu",
   },
   admin: {
-    hidden: ({ user }) => user?.role !== "admin",
+    // Kolekce je viditelná v menu i pro prodejce. Díky access pravidlům
+    // (read/update/delete scoped na vlastníka) tam každý vidí jen svoje soubory.
+    useAsTitle: "filename",
   },
   hooks: {
     beforeChange: [addUser],
