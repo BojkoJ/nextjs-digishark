@@ -18,20 +18,26 @@ export async function POST(req: Request) {
 	const body = await req.text();
 	const signature = (await headers()).get("stripe-signature") ?? "";
 
+	// Defenzivně ořežeme mezery a případné uvozovky, které se občas omylem
+	// zkopírují do hodnoty env proměnné na Vercelu.
+	const webhookSecret = (process.env.STRIPE_WEBHOOK_SECRET || "")
+		.trim()
+		.replace(/^["']|["']$/g, "");
+
 	let event: Stripe.Event;
 	try {
-		event = stripe.webhooks.constructEvent(
-			body,
-			signature,
-			process.env.STRIPE_WEBHOOK_SECRET || ""
-		);
+		event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
 	} catch (err) {
-		// Zalogujeme do Vercel logů, ať je jasné, že selhalo ověření podpisu
-		// (nejčastěji špatný/chybějící STRIPE_WEBHOOK_SECRET pro tento endpoint).
-		console.error(
-			"Stripe webhook: ověření podpisu selhalo.",
-			err instanceof Error ? err.message : err
-		);
+		// Diagnostika do Vercel logů - bez prozrazení samotného secretu.
+		// secretPrefix musí být "whsec_"; secretLen ~ 38; hasSignature true; bodyLen > 0.
+		console.error("Stripe webhook: ověření podpisu selhalo.", {
+			message: err instanceof Error ? err.message : err,
+			hasSecret: webhookSecret.length > 0,
+			secretLen: webhookSecret.length,
+			secretPrefix: webhookSecret.slice(0, 6),
+			hasSignature: signature.length > 0,
+			bodyLen: body.length,
+		});
 		return new Response(
 			`Webhook Error: ${err instanceof Error ? err.message : "Unknown Error"}`,
 			{ status: 400 }
