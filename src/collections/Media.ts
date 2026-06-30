@@ -74,6 +74,12 @@ export const Media: CollectionConfig = {
     upload: {
         // staticURL/staticDir (lokální filesystem) v Payload 3 nepoužíváme -
         // ukládání souborů řeší UploadThing plugin v payload.config.ts
+        //
+        // adminThumbnail: vynutíme, aby náhled v adminu používal hlavní URL obrázku
+        // z UploadThingu. Bez toho admin sahá po URL zmenšeniny (size), jejíž klíč
+        // nedohledá -> rozbitá URL -> zobrazí se jen ikona souboru.
+        adminThumbnail: ({ doc }) =>
+            typeof doc?.url === "string" ? doc.url : null,
         imageSizes: [
             // generuje různé verze těchto obrázků
             {

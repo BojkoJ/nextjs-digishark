@@ -47,6 +47,10 @@ const syncUser: CollectionAfterChangeHook<Product> = async ({ req, doc }) => {
 	}
 };
 
+// Admin vidí/spravuje vše; prodejce jen SVOJE produkty.
+// Vlastnictví určujeme přímo přes pole `user` na produktu (kdo ho vytvořil),
+// ne přes neaktuální pole `user.products` - jinak by čerstvě vytvořený produkt
+// nebyl hned čitelný a po uložení by spadl na notFound.
 const isAdminOrHasAccess =
 	(): Access =>
 	({ req: { user: _user } }) => {
@@ -55,24 +59,9 @@ const isAdminOrHasAccess =
 		if (!user) return false;
 		if (user.role === "admin") return true;
 
-		const userProductIDs = (user.products || []).reduce<Array<string>>(
-			(acc, product) => {
-				if (!product) return acc;
-
-				if (typeof product === "string") {
-					acc.push(product);
-				} else {
-					acc.push(product.id);
-				}
-
-				return acc;
-			},
-			[]
-		);
-
 		return {
-			id: {
-				in: userProductIDs,
+			user: {
+				equals: user.id,
 			},
 		};
 	};
@@ -129,8 +118,9 @@ export const Products: CollectionConfig = {
 		useAsTitle: "name",
 	},
 	access: {
-		// access rules - pravidla kdo může mít přístup k jakým částem jakéhp produktu
+		// access rules - pravidla kdo může mít přístup k jakým částem jakého produktu
 		read: isAdminOrHasAccess(),
+		create: ({ req }) => Boolean(req.user), // každý přihlášený prodejce může vytvářet produkty
 		update: isAdminOrHasAccess(),
 		delete: isAdminOrHasAccess(),
 	},
