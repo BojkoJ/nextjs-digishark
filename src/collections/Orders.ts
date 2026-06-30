@@ -1,6 +1,7 @@
-import { Access, CollectionConfig } from "payload/types";
+import type { Access, CollectionConfig } from "payload";
 
 const yourOwn: Access = ({ req: { user } }) => {
+    if (!user) return false;
     if (user.role === "admin") return true;
 
     // Zajištění toho aby uživatel mohl číst jen svoje objednávky
@@ -21,12 +22,12 @@ export const Orders: CollectionConfig = {
     },
     access: {
         read: yourOwn,
-        update: ({ req }) => req.user.role === "admin",
-        delete: ({ req }) => req.user.role === "admin",
-        create: ({ req }) => req.user.role === "admin",
+        update: ({ req }) => req.user?.role === "admin",
+        delete: ({ req }) => req.user?.role === "admin",
+        create: ({ req }) => req.user?.role === "admin",
     },
     admin: {
-        useAsTitle: "Vaše objednávky",
+        useAsTitle: "id",
         description: "Přehled všech vašich objednávek na DigiShark.",
     },
     fields: [
@@ -35,7 +36,7 @@ export const Orders: CollectionConfig = {
             type: "checkbox",
             label: "Zaplaceno",
             access: {
-                read: ({ req }) => req.user.role === "admin",
+                read: ({ req }) => req.user?.role === "admin",
                 create: () => false,
                 update: () => false,
             },

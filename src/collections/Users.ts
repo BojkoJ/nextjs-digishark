@@ -1,7 +1,8 @@
 import { PrimaryActionEmailHtml } from "../components/emails/PrimaryActionEmail";
-import { Access, CollectionConfig } from "payload/types";
+import type { Access, CollectionConfig } from "payload";
 
 const adminsAndUser: Access = ({ req: { user } }) => {
+	if (!user) return false;
 	if (user.role === "admin") return true;
 
 	return {
@@ -19,8 +20,8 @@ export const Users: CollectionConfig = {
 	slug: "users",
 	auth: {
 		verify: {
-			generateEmailHTML: ({ token }) => {
-				return PrimaryActionEmailHtml({
+			generateEmailHTML: async ({ token }) => {
+				return await PrimaryActionEmailHtml({
 					actionLabel: "Ověřte svůj e-mail",
 					buttonText: "Ověřit e-mail",
 					href: `${process.env.NEXT_PUBLIC_SERVER_URL}/overit-email?token=${token}`,
@@ -31,11 +32,11 @@ export const Users: CollectionConfig = {
 	access: {
 		read: adminsAndUser,
 		create: () => true, // každý si může vytvořit účet
-		update: ({ req }) => req.user.role === "admin",
-		delete: ({ req }) => req.user.role === "admin",
+		update: ({ req }) => req.user?.role === "admin",
+		delete: ({ req }) => req.user?.role === "admin",
 	},
 	admin: {
-		hidden: ({ user }) => user.role !== "admin", // schované pro uživatele co nejsou admini
+		hidden: ({ user }) => user?.role !== "admin", // schované pro uživatele co nejsou admini
 		defaultColumns: ["id"],
 	},
 	fields: [

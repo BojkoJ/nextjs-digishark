@@ -25,6 +25,7 @@ const ProductReel = (props: ProductReelProps) => {
 				query,
 			},
 			{
+				// tRPC v11 si initialPageParam (počáteční cursor) řeší samo
 				getNextPageParam: (lastPage) => lastPage.nextPage,
 			}
 		);
@@ -68,7 +69,7 @@ const ProductReel = (props: ProductReelProps) => {
 							<ProductListing
 								index={index}
 								product={product}
-								key={product?.id}
+								key={product?.id ?? `skeleton-${index}`}
 							/>
 						))}
 					</div>

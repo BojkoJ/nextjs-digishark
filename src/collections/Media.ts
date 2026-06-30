@@ -1,5 +1,5 @@
 import { User } from "../payload-types";
-import { Access, CollectionConfig } from "payload/types";
+import type { Access, CollectionConfig } from "payload";
 
 // typ Acccess poskytuje Payload, tahle funkce bude vracet přístupovou politiku (access policy)
 // která nám bude říkat jestli user má přístup k obrázku
@@ -20,7 +20,7 @@ const isAdminOrHasAccessToImages =
             // pokud pole user které je přiřazeno obrázku (user field které je v poli fields)
             // se rovná aktuálně přihlášenému userovi tak je to jeho obrázek
             user: {
-                equals: req.user.id,
+                equals: user.id,
             },
         };
     };
@@ -37,7 +37,7 @@ export const Media: CollectionConfig = {
                 //funkce co se zavolá těsně před změnou produktu
                 // každý productImage (náhleďák produktu) bude spojený s uživatelem protože
                 // když uživatel bude vybírat media files (soubory) pro produkt, tak aby měl přístup jen k těm svým¨
-                return { ...data, user: req.user.id };
+                return { ...data, user: req.user?.id };
 
                 // Funkce v tomto hooku zajistí, že každá změna položky media přiřadí aktuálního uživatele
                 // (získaného z req.user.id) jako vlastníka této položky.
@@ -49,7 +49,8 @@ export const Media: CollectionConfig = {
         // ale tím pádem musíme omezit to, aby každý uživatel mohl nahrát jen z těch svých existujících
         read: async ({ req }) => {
             // uživatel, nebo zákazník na frontendu by měl být schopný vidět všechny obrázky
-            const referer = req.headers.referer;
+            // Payload 3 používá Web Headers, takže čteme přes .get()
+            const referer = req.headers.get("referer");
 
             // Pokud uživatel není lognutý nebo není v backendu tak pak funkce vrátí true - může číst všechny obrázky
             if (!req.user || !referer?.includes("sell")) {
@@ -66,12 +67,12 @@ export const Media: CollectionConfig = {
     admin: {
         // nechceme aby se Media zobrazovala v admin dashboardu v CMS, ale chceme aby pořád fungovala jako úložiště
         // nahraných náhleďáků, chceme aby tuhle kolekci viděl jenom Administrátor
-        hidden: ({ user }) => user.role !== "admin",
+        hidden: ({ user }) => user?.role !== "admin",
         // pokud user není admin tak Media bude hidden
     },
     upload: {
-        staticURL: "/media", // tady chceme aby náhleďáky byly
-        staticDir: "media", // složka media ve filesystemu kde budou media uloženy
+        // staticURL/staticDir (lokální filesystem) v Payload 3 nepoužíváme -
+        // ukládání souborů řeší UploadThing plugin v payload.config.ts
         imageSizes: [
             // generuje různé verze těchto obrázků
             {

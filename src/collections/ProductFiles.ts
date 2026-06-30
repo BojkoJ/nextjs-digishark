@@ -1,8 +1,11 @@
 import { User } from "../payload-types";
-import { BeforeChangeHook } from "payload/dist/collections/config/types";
-import { Access, CollectionConfig } from "payload/types";
+import type {
+	CollectionBeforeChangeHook,
+	Access,
+	CollectionConfig,
+} from "payload";
 
-const addUser: BeforeChangeHook = ({ req, data }) => {
+const addUser: CollectionBeforeChangeHook = ({ req, data }) => {
 	const user = req.user as User | null;
 	return { ...data, user: user?.id };
 };
@@ -78,20 +81,19 @@ export const ProductFiles: CollectionConfig = {
 		plural: "Soubory produktu",
 	},
 	admin: {
-		hidden: ({ user }) => user.role !== "admin",
+		hidden: ({ user }) => user?.role !== "admin",
 	},
 	hooks: {
 		beforeChange: [addUser],
 	},
 	access: {
 		read: yourOwnAndPurchased,
-		update: ({ req }) => req.user.role === "admin",
-		delete: ({ req }) => req.user.role === "admin",
+		update: ({ req }) => req.user?.role === "admin",
+		delete: ({ req }) => req.user?.role === "admin",
 	},
 	upload: {
-		staticURL: "/product_files", // na tomhle endpointu budou soubory dostupné
-		staticDir: "product_files", // budou tady v této složce
-		// tímto vlastně říkáme, že složba product_files bude na routě /product_files
+		// staticURL/staticDir (lokální filesystem) v Payload 3 nepoužíváme -
+		// ukládání souborů řeší UploadThing plugin v payload.config.ts
 		mimeTypes: [
 			"image/*", // Přijímá všechny formáty obrázků (včetně PNG, JPEG, SVG, atd.)
 			"font/*", // Přijímá všechny formáty písma (např. TTF, OTF, WOFF)

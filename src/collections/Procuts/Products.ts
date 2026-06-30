@@ -1,19 +1,22 @@
-import {
-	BeforeChangeHook,
-	AfterChangeHook,
-} from "payload/dist/collections/config/types";
+import type {
+	CollectionBeforeChangeHook,
+	CollectionAfterChangeHook,
+	Access,
+	CollectionConfig,
+} from "payload";
 import { PRODUCT_CATEGORIES } from "../../config";
-import { Access, CollectionConfig } from "payload/types";
 import { Product, User } from "../../payload-types";
 import { stripe } from "../../lib/stripe";
 
-const addUser: BeforeChangeHook<Product> = async ({ req, data }) => {
+const addUser: CollectionBeforeChangeHook<Product> = async ({ req, data }) => {
 	const user = req.user;
 
-	return { ...data, user: user.id };
+	return { ...data, user: user?.id };
 };
 
-const syncUser: AfterChangeHook<Product> = async ({ req, doc }) => {
+const syncUser: CollectionAfterChangeHook<Product> = async ({ req, doc }) => {
+	if (!req.user) return;
+
 	const fullUser = await req.payload.findByID({
 		collection: "users",
 		id: req.user.id,
@@ -186,9 +189,9 @@ export const Products: CollectionConfig = {
 			defaultValue: "pending",
 			access: {
 				// request obsahuje roli uživatele
-				create: ({ req }) => req.user.role === "admin",
-				read: ({ req }) => req.user.role === "admin",
-				update: ({ req }) => req.user.role === "admin",
+				create: ({ req }) => req.user?.role === "admin",
+				read: ({ req }) => req.user?.role === "admin",
+				update: ({ req }) => req.user?.role === "admin",
 			},
 			options: [
 				{

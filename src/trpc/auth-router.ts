@@ -2,6 +2,7 @@ import { AuthCredentialsValidator } from "../lib/validators/account-credentials-
 import { publicProcedure, router } from "./trpc";
 import { getPayloadClient } from "../get-payload";
 import { TRPCError } from "@trpc/server";
+import { cookies } from "next/headers";
 import { z } from "zod";
 
 export const authRouter = router({
@@ -65,20 +66,35 @@ export const authRouter = router({
 
 	signIn: publicProcedure
 		.input(AuthCredentialsValidator)
-		.mutation(async ({ input, ctx }) => {
+		.mutation(async ({ input }) => {
 			const { email, password } = input;
-			const { res } = ctx;
 
 			const payload = await getPayloadClient();
 
 			try {
-				await payload.login({
+				const { token, exp } = await payload.login({
 					collection: "users",
 					data: {
 						email,
 						password,
 					},
-					res,
+				});
+
+				if (!token) {
+					throw new TRPCError({ code: "UNAUTHORIZED" });
+				}
+
+				// V Payload 3 nastavíme přihlašovací cookie ručně přes next/headers.
+				// Název cookie ("payload-token") musí sedět s tím, co Payload očekává.
+				const cookieStore = await cookies();
+				cookieStore.set({
+					name: "payload-token",
+					value: token,
+					httpOnly: true,
+					path: "/",
+					sameSite: "lax",
+					secure: process.env.NODE_ENV === "production",
+					expires: exp ? new Date(exp * 1000) : undefined,
 				});
 
 				return { success: true };

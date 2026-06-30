@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
 	const { user } = await getServerSideUser(cookies);
 
 	if (user && ["/prihlaseni", "registrace"].includes(nextUrl.pathname)) {
-		return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL}/`);
+		return NextResponse.redirect(`${process.env.NEXT_PUBLIC_SERVER_URL}/`);
 	}
 
 	return NextResponse.next();

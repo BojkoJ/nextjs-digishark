@@ -1,30 +1,73 @@
-## Digishark - Moderní fullstack e-commerce tržiště pro digitální produkty
+# DigiShark – Moderní fullstack e-commerce tržiště pro digitální produkty
 
-Vytvořeno pomocí Next.js 14 App Router, tRPC, TypeScript, Payload CMS, Tailwindcss
+Postaveno na **Next.js 15 (App Router)**, **Payload 3**, **tRPC 11**, **TypeScript**, **Tailwind CSS** a **shadcn/ui**.
 
-### Funkce
+> Projekt byl postaven v lednu-březnu 2024
 
-🛠️ Kompletní tržiště postavené od základu v Next.js 14\
-💻 Včetně stylové vstupní stránky a produktových stránek\
-🎨 Včetně vlastní, GPT-4 generované grafiky (obrázky)\
-💳 Kompletní ovládací panel administrátora (CMS)\
-🛍️ Uživatelé mohou nakupovat a prodávat vlastní produkty\
-🛒 Lokálně ukládaný nákupní košík\
-🔑 Autentifikace pomocí Payload CMS\
-🖥️ Next.js self hosting - pomocí Express.js\
-🌟 Čisté, moderní uživatelské rozhraní pomocí shadcn-ui\
-✉️ Krásné e-maily pro registraci a po nákupu\
-✅ Administrátor může ověřovat produkty, aby zajistil vysokou kvalitu produktu\
-⌨️ 100% napsáno v jazyce TypeScript\
-🎁 ...mnohem více
+> Projekt byl migrován 30.06.2026 z **Payload 2 (self-hosted přes Express)** na **Payload 3**, který běží
+> nativně uvnitř Next.js. Díky tomu odpadá vlastní Express server a aplikace běží plně na **Vercelu**.
 
-### Jak spustit lokálně:
+---
 
-Chcete-li spustit tento projekt lokálně, musíte:
+## Hlavní změny oproti původní verzi
 
-1. Naklonovat tento repozitář
-2. Vytvořit a vyplnit .env soubor v kořenovém adresáři projektu
+| Oblast         | Dříve (Payload 2)                       | Nyní (Payload 3)                                    |
+| -------------- | --------------------------------------- | --------------------------------------------------- |
+| Hosting        | Vlastní Express server (`server.ts`)    | Nativně v Next.js → běží na Vercelu                 |
+| Databáze       | MongoDB                                 | **PostgreSQL** (`@payloadcms/db-postgres`)          |
+| Úložiště médií | Lokální filesystem (`staticDir`)        | **UploadThing** (`@payloadcms/storage-uploadthing`) |
+| Admin panel    | `/sell` (přes Express)                  | `/sell` (route group `(payload)`)                   |
+| Bundler        | webpack (`@payloadcms/bundler-webpack`) | Next.js (žádný extra bundler)                       |
+| Editor         | Slate                                   | Lexical (`@payloadcms/richtext-lexical`)            |
+| E-maily        | nodemailer v `get-payload.ts`           | `@payloadcms/email-nodemailer` v konfiguraci        |
+| API vrstva     | tRPC 10 přes Express adaptér            | tRPC 11 přes fetch route handler                    |
 
-### Jak je projekt na tom?
+Struktura `app/` je nyní rozdělená na dvě route groups:
 
-Aktuálně je tento projekt ve výstavbě.
+- `src/app/(frontend)/` – veřejný web (každá má vlastní root layout)
+- `src/app/(payload)/` – admin panel + REST/GraphQL API generované Payloadem
+
+---
+
+## Lokální spuštění
+
+```bash
+# 1. Nainstalujte závislosti (doporučeno pnpm)
+pnpm install
+
+# 2. Vytvořte .env podle vzoru a vyplň hodnoty
+cp .env.example .env
+
+# 3. Vygenerujte TypeScript typy z Payload konfigurace
+pnpm generate:types
+
+# 4. Spusťte vývojový server
+pnpm dev
+```
+
+- Web poběží na `http://localhost:3000`
+- Admin (CMS) na `http://localhost:3000/sell`
+
+Při prvním spuštění Payload automaticky vytvoří tabulky v Postgres (dev mód).
+Otevři `/sell` a založ si prvního uživatele – tomu pak v tabulce `users` nastav `role = admin`,
+aby viděl všechny kolekce.
+
+> **Proměnné prostředí**: kompletní seznam i s popisem je v souboru [.env.example](.env.example).
+
+---
+
+První admin účet vytvoříte registrací na `/sell`; pak danému uživateli v databázi
+nastav `role = admin`.
+
+---
+
+## Užitečné příkazy
+
+```bash
+pnpm dev                 # vývojový server
+pnpm build               # produkční build
+pnpm start               # spuštění produkčního buildu
+pnpm generate:types      # regenerace src/payload-types.ts z konfigurace
+pnpm generate:importmap  # regenerace import map (jen když přidáš custom Payload komponenty)
+pnpm lint                # ESLint
+```

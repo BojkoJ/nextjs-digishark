@@ -10,7 +10,7 @@ import UserAccountNav from "./UserAccountNav";
 import MobileNav from "./MobileNav";
 
 const Navbar = async () => {
-	const nextCookies = cookies();
+	const nextCookies = await cookies();
 	const { user } = await getServerSideUser(nextCookies);
 
 	return (

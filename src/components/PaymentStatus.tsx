@@ -1,7 +1,6 @@
 "use client";
 
 import { trpc } from "@/trpc/client";
-import { router } from "@/trpc/trpc";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -20,7 +19,9 @@ const PaymentStatus = ({ orderEmail, orderId, isPaid }: PaymentStatusProps) => {
         },
         {
             enabled: isPaid === false,
-            refetchInterval: (data) => (data?.isPaid ? false : 1000),
+            // v React Query v5 callback dostává celý query objekt, ne přímo data
+            refetchInterval: (query) =>
+                query.state.data?.isPaid ? false : 1000,
         }
     );
 

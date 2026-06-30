@@ -1,16 +1,27 @@
-import { ExpressContext } from "@/server";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { User } from "payload/dist/auth";
-import { PayloadRequest } from "payload/types";
+import { getPayloadClient } from "../get-payload";
+import type { User } from "../payload-types";
 
-// generic type ExpressContext umožní TypeScriptu vědět, že z Expressu předáváme res a req
-const t = initTRPC.context<ExpressContext>().create();
+/*
+    Payload 3 / Next.js: tRPC běží přes fetch adaptér (route handler),
+    takže místo Express req/res předáváme nativní Web Request.
+    Z jeho hlaviček (cookie / Authorization) ověříme uživatele přes payload.auth().
+*/
+export const createContext = async ({ req }: { req: Request }) => {
+	return { req };
+};
+
+export type Context = Awaited<ReturnType<typeof createContext>>;
+
+const t = initTRPC.context<Context>().create();
 
 const middleware = t.middleware;
-const isAuth = middleware(async ({ ctx, next }) => {
-	const request = ctx.req as PayloadRequest; // We get this from Express and cast is as PayloadRequest
 
-	const { user } = request as { user: User | null };
+const isAuth = middleware(async ({ ctx, next }) => {
+	const payload = await getPayloadClient();
+
+	// payload.auth ověří přihlášeného uživatele z hlaviček (payload-token cookie)
+	const { user } = await payload.auth({ headers: ctx.req.headers });
 
 	if (!user) {
 		throw new TRPCError({
@@ -19,15 +30,13 @@ const isAuth = middleware(async ({ ctx, next }) => {
 	}
 
 	return next({
-		// call the server to create seesion
 		ctx: {
-			user,
-			// We attach user to context for private procedure
+			user: user as User,
 		},
 	});
 });
 
 export const router = t.router;
-// každý bude moct volat tenhle API endpoint - pro endpointy, který bude moct volat každý
+// pro endpointy, který může volat každý
 export const publicProcedure = t.procedure;
 export const privateProcedure = t.procedure.use(isAuth);
