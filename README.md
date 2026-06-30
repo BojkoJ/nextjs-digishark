@@ -49,15 +49,15 @@ pnpm dev
 - Admin (CMS) na `http://localhost:3000/sell`
 
 Při prvním spuštění Payload automaticky vytvoří tabulky v Postgres (dev mód).
-Otevři `/sell` a založ si prvního uživatele – tomu pak v tabulce `users` nastav `role = admin`,
+Otevřete `/sell` a založte si prvního uživatele, tomu pak v tabulce `users` nastav `role = admin`,
 aby viděl všechny kolekce.
 
 > **Proměnné prostředí**: kompletní seznam i s popisem je v souboru [.env.example](.env.example).
 
 ---
 
-První admin účet vytvoříte registrací na `/sell`; pak danému uživateli v databázi
-nastav `role = admin`.
+První admin účet vytvoříte registrací na `/sell`; pak danému uživateli v Payload CMS
+nastavte `role = admin`.
 
 ---
 

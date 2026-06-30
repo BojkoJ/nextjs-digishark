@@ -4,6 +4,7 @@ import type {
 	Access,
 	CollectionConfig,
 } from "payload";
+import { APIError } from "payload";
 import { PRODUCT_CATEGORIES } from "../../config";
 import { Product, User } from "../../payload-types";
 import { stripe } from "../../lib/stripe";
@@ -76,39 +77,60 @@ export const Products: CollectionConfig = {
 		beforeChange: [
 			addUser,
 			async (args) => {
-				if (args.operation === "create") {
-					const data = args.data as Product;
+				try {
+					if (args.operation === "create") {
+						const data = args.data as Product;
 
-					const createdProduct = await stripe.products.create({
-						name: data.name,
-						default_price_data: {
-							currency: "CZK",
-							unit_amount: Math.round(data.price * 100),
-						},
-					});
+						const createdProduct = await stripe.products.create({
+							name: data.name,
+							default_price_data: {
+								currency: "CZK",
+								unit_amount: Math.round((data.price ?? 0) * 100),
+							},
+						});
 
-					const updated: Product = {
-						...data,
-						stripeId: createdProduct.id,
-						priceId: createdProduct.default_price as string,
-					};
+						const updated: Product = {
+							...data,
+							stripeId: createdProduct.id,
+							priceId: createdProduct.default_price as string,
+						};
 
-					return updated;
-				} else if (args.operation === "update") {
-					const data = args.data as Product;
+						return updated;
+					} else if (args.operation === "update") {
+						const data = args.data as Product;
 
-					const updatedProduct = await stripe.products.update(data.stripeId!, {
-						name: data.name,
-						default_price: data.priceId!,
-					});
+						const updatedProduct = await stripe.products.update(
+							data.stripeId!,
+							{
+								name: data.name,
+								default_price: data.priceId!,
+							}
+						);
 
-					const updated: Product = {
-						...data,
-						stripeId: updatedProduct.id,
-						priceId: updatedProduct.default_price as string,
-					};
+						const updated: Product = {
+							...data,
+							stripeId: updatedProduct.id,
+							priceId: updatedProduct.default_price as string,
+						};
 
-					return updated;
+						return updated;
+					}
+				} catch (err) {
+					// Zalogujeme skutečnou Stripe chybu do logů (Vercel → Logs)
+					args.req.payload.logger.error(
+						{ err },
+						"Stripe sync produktu selhal"
+					);
+
+					// a vyhodíme srozumitelnou hlášku do admin UI místo záhadného pádu
+					throw new APIError(
+						`Nepodařilo se synchronizovat produkt se Stripe: ${
+							err instanceof Error ? err.message : "neznámá chyba"
+						}. Zkontroluj proměnnou STRIPE_SECRET_KEY na Vercelu.`,
+						400,
+						undefined,
+						true
+					);
 				}
 			},
 		],
